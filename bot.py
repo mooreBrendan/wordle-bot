@@ -1,8 +1,13 @@
+"""A Bot to solve the game wordle"""
+import enum
 from string import ascii_lowercase
 
 
 class Bot:
+  """A bot to solve the game wordle"""
+
   def __init__(self, file, print_d=False):
+    """initializes a bot, takes file name(string), and print condition(bool)"""
     self.words = self.get_words(file)
     self._print = print_d
 
@@ -11,34 +16,38 @@ class Bot:
     words = file.read().split("\n")
     return words
 
-  def check_move(self, letter, index, word):
-    cleaned = word[:index]+word[index+1:]
+  def check_move(self, letter, index, prev_guess):
+    cleaned = prev_guess[:index]+prev_guess[index+1:]
     return letter in cleaned
 
-  def check_doubles(self, new_guess, pattern):
-    temp = []
-    for i, e in enumerate(new_guess):
-      if pattern[i] == "x":
-        continue
-      elif pattern[i] == "o":
-        continue
-      temp.append(e)
-    return temp
+  def check_doubles(self, pattern, prev_guess, index):
+    for ind, val in enumerate(prev_guess):
+      if index != ind:
+        if val == prev_guess[index] and (pattern[ind] == 'x' or pattern[ind] == 'o'):
+          return True
+    return False
 
   def check(self, prev_guess, pattern, new_guess):
     for index, pat in enumerate(pattern):
-      if pat == "_":
-        temp = self.check_doubles(new_guess, pattern)
-        if prev_guess[index] in temp:
+
+      # check for exact
+      if pat == "x":
+        if new_guess[index] != prev_guess[index]:
           return False
+
+      # check for move
       elif pat == "o":
         # check for difference
         if new_guess[index] == prev_guess[index]:
           return False
         if not self.check_move(prev_guess[index], index, new_guess):
           return False
-      elif pat == "x":
-        if new_guess[index] != prev_guess[index]:
+
+      # check for not
+      elif pat == "_":
+        if self.check_doubles(pattern, prev_guess, index):
+          continue
+        if prev_guess[index] in new_guess:
           return False
 
     return True

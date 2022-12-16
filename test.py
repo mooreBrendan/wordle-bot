@@ -13,18 +13,18 @@ class bcolors:
   UNDERLINE = '\033[4m'
 
 
-def test_check(bot, guess, pattern, word, expected):
-  if bot.check(guess, pattern, word) != expected:
+def test_check(bot, prev_guess, pattern, new_guess, expected):
+  if bot.check(prev_guess, pattern, new_guess) != expected:
     print(bcolors.FAIL +
-          f"FAILED:{guess=},{pattern=},{word=},{expected=}"+bcolors.ENDC)
+          f"FAILED:{prev_guess=},{pattern=},{new_guess=},{expected=}"+bcolors.ENDC)
     return False
   return True
 
 
-def test_check_move(bot, letter, index, word, expected):
-  if bot.check_move(letter, index, word) != expected:
+def test_check_move(bot, letter, index, prev_guess, expected):
+  if bot.check_move(letter, index, prev_guess) != expected:
     print(bcolors.FAIL +
-          f"FAILED:{letter=},{index=},{word=},{expected=}"+bcolors.ENDC)
+          f"FAILED:{letter=},{index=},{prev_guess=},{expected=}"+bcolors.ENDC)
     return False
   return True
 
@@ -42,7 +42,7 @@ def test_check_move_all(bot):
 
 
 def test_check_all(bot):
-  print("\n"+bcolors.OKCYAN+bcolors.BOLD+"Testing check_move"+bcolors.ENDC)
+  print("\n"+bcolors.OKCYAN+bcolors.BOLD+"Testing check"+bcolors.ENDC)
   tests = [
       # check placement for empty
       test_check(bot, "irate", "_____", "ioooo", False),
@@ -93,6 +93,20 @@ def test_check_all(bot):
       test_check(bot, "irate", "____x", "ooooe",	True),
 
       # check doubles (zero correct)
+      test_check(bot, "keeps", "_o___", "abbey", True),
+      test_check(bot, "algae", "x___o", "abbey", True),
+      test_check(bot, "orbit", "__x__", "abbey", True),
+      test_check(bot, "abate", "xx__o", "abbey", True),
+      test_check(bot, "opens", "__o__", "abbey", True),
+      test_check(bot, "babes", "ooxx_", "abbey", True),
+      test_check(bot, "kebab", "_oxoo", "abbey", True),
+      test_check(bot, "abyss", "xxo__", "abbey", True),
+      test_check(bot, "annal", "o_xxx", "banal", True),
+      test_check(bot, "union", "_o___", "banal", True),
+      test_check(bot, "alloy", "oo___", "banal", True),
+      test_check(bot, "aahed", "o____", "alton", False),
+      test_check(bot, "aahed", "o____", "basty", True),
+      test_check(bot, "aahed", "o____", "baals", False),
 
       # check doubles (one correct)
 
@@ -101,7 +115,7 @@ def test_check_all(bot):
       test_check(bot, "irate", "__xxx", "elate", True),
       test_check(bot, "irate", "xx_x_", "irote", False),
       test_check(bot, "irate", "xx_x_", "irats", False),
-      test_check(bot, "irate", "xx_x_", "irots", True)
+      test_check(bot, "irate", "xx_x_", "irots", True),
   ]
   print(bcolors.OKGREEN+f"correct:{sum(tests)}"+bcolors.ENDC)
   print(bcolors.FAIL+f"failed:{len(tests)-sum(tests)}"+bcolors.ENDC)
