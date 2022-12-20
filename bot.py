@@ -27,6 +27,13 @@ class Bot:
           return True
     return False
 
+  def check_doubles_move(self, pattern, prev_guess, new_guess, letter):
+    count = 0
+    for ind, pat in enumerate(pattern):
+      if (pat == 'x' or pat == 'o') and prev_guess[ind] == letter:
+        count += 1
+    return new_guess.count(letter) >= count
+
   def check(self, prev_guess, pattern, new_guess):
     for index, pat in enumerate(pattern):
 
@@ -40,14 +47,18 @@ class Bot:
         # check for difference
         if new_guess[index] == prev_guess[index]:
           return False
+        if not self.check_doubles_move(pattern, prev_guess, new_guess, prev_guess[index]):
+          return False
         if not self.check_move(prev_guess[index], index, new_guess):
           return False
 
       # check for not
       elif pat == "_":
         if self.check_doubles(pattern, prev_guess, index):
-          continue
-        if prev_guess[index] in new_guess:
+          letter = prev_guess[index]
+          if new_guess.count(letter) >= prev_guess.count(letter):
+            return False
+        elif prev_guess[index] in new_guess:
           return False
 
     return True

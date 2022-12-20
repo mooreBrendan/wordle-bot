@@ -110,6 +110,16 @@ def test_check_all(bot):
 
       # check doubles (one correct)
 
+      # check triples
+      test_check(bot, "aaabb", "oo___", "ccaaa", False),
+      test_check(bot, "aaabb", "oo___", "cccaa", True),
+      test_check(bot, "aabbb", "oo___", "ccaaa", True),
+      test_check(bot, "aabbb", "oo___", "cccaa", True),
+      test_check(bot, "aabbb", "oo___", "cccca", False),
+      test_check(bot, "aabbb", "o____", "ccaaa", False),
+      test_check(bot, "aabbb", "o____", "cccaa", False),
+      test_check(bot, "aabbb", "o____", "cccca", True),
+
       # random tests:
       test_check(bot, "irate", "__xxx", "crate", False),
       test_check(bot, "irate", "__xxx", "elate", True),
