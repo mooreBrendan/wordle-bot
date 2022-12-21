@@ -1,15 +1,14 @@
 """A Bot to solve the game wordle"""
-import enum
 from string import ascii_lowercase
+from random import randrange
 
 
 class Bot:
   """A bot to solve the game wordle"""
 
-  def __init__(self, file, print_d=False):
+  def __init__(self, file):
     """initializes a bot, takes file name(string), and print condition(bool)"""
     self.words = self.get_words(file)
-    self._print = print_d
 
   def get_words(self, fname):
     file = open(fname)
@@ -30,7 +29,7 @@ class Bot:
   def check_doubles_move(self, pattern, prev_guess, new_guess, letter):
     count = 0
     for ind, pat in enumerate(pattern):
-      if (pat == 'x' or pat == 'o') and prev_guess[ind] == letter:
+      if pat in 'xo' and prev_guess[ind] == letter:
         count += 1
     return new_guess.count(letter) >= count
 
@@ -95,22 +94,22 @@ class Bot:
   def get_word(self):
     if len(self.words) < 1:
       raise ValueError("WORD LIST EMPTY!!!!")
-    return self.words[0]
+    return self.words[randrange(0, len(self.words))]
 
-  def run(self):
+  def run(self, print_d=False):
     for _ in range(6):
       word_choie = self.get_word()
-      if self._print:
+      if print_d:
         print(f"word space:{len(self.words)}")
         print(word_choie)
-      if len(self.words) == 1 and self._print:
+      if len(self.words) == 1 and print_d:
         print("FINAL ANSWER")
         return
       guess, pattern = self.get_input()
-      if pattern == "xxxxx" and self._print:
+      if pattern == "xxxxx" and print_d:
         print("congratulations!")
         return
       self.words = self.cull_list(guess, pattern)
 
-    if self._print:
+    if print_d:
       print("failed game")

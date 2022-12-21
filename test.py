@@ -1,4 +1,5 @@
 from bot import Bot
+from game import Game
 
 
 class bcolors:
@@ -131,7 +132,54 @@ def test_check_all(bot):
   print(bcolors.FAIL+f"failed:{len(tests)-sum(tests)}"+bcolors.ENDC)
 
 
+def test_game_eval(test_game, guess, answer, expected_pattern):
+  pattern = test_game.evaluate(guess, answer)
+  if pattern != expected_pattern:
+    print(bcolors.FAIL +
+          f"FAILED:{guess=},{answer=},{pattern=},{expected_pattern=}"+bcolors.ENDC)
+    return False
+  return True
+
+
+def test_game_eval_all(test_game):
+  print("\n"+bcolors.OKCYAN+bcolors.BOLD+"Testing game eval"+bcolors.ENDC)
+  tests = [
+      test_game_eval(test_game, "irate", "bcdfg", "_____"),
+      test_game_eval(test_game, "irate", "eirat", "ooooo"),
+      test_game_eval(test_game, "irate", "apple", "__o_x"),
+      test_game_eval(test_game, "irate", "irate", "xxxxx"),
+      test_game_eval(test_game, "irate", "crate", "_xxxx"),
+      test_game_eval(test_game, "irate", "blate", "__xxx"),
+      test_game_eval(test_game, "irate", "orote", "_x_xx"),
+
+      # double
+      test_game_eval(test_game, "ranee", "range", "xxx_x"),
+      test_game_eval(test_game, "pools", "apple", "o__x_"),
+      test_game_eval(test_game, "apple", "pools", "_o_x_"),
+  ]
+  print(bcolors.OKGREEN+f"correct:{sum(tests)}"+bcolors.ENDC)
+  print(bcolors.FAIL+f"failed:{len(tests)-sum(tests)}"+bcolors.ENDC)
+
+
+def test_game_bunch(test_game, count):
+  print("\n"+bcolors.OKCYAN+bcolors.BOLD+"Testing game bunch"+bcolors.ENDC)
+  fails = 0
+  for _ in range(count):
+    if _ % 10 == 0:
+      print(_)
+    rounds = test_game.test_game()
+    if len(rounds) > test_game.num_guesses:
+      fails += 1
+      print(bcolors.FAIL + f"FAILED:{rounds=}"+bcolors.ENDC)
+
+  print(bcolors.OKGREEN+f"correct:{count-fails}"+bcolors.ENDC)
+  print(bcolors.FAIL+f"failed:{fails}"+bcolors.ENDC)
+
+
 if __name__ == "__main__":
   test_bot = Bot("valid-wordle-words.txt")
+  test_game = Game("valid-wordle-words.txt", 6)
   test_check_move_all(test_bot)
   test_check_all(test_bot)
+  test_game_eval_all(test_game)
+  test_game_bunch(test_game, 500)
